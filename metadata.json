@@ -1,0 +1,8 @@
+{
+  "name": "HeatShield AI — Hyperlocal Heat-Health Risk Prediction",
+  "description": "Hyperlocal heat-health risk prediction dashboard for urban neighbourhood microclimate and vulnerability assessment.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
