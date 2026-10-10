@@ -8,6 +8,10 @@
  * @module
  */
 
+import type * as account from "../account.js";
+import type * as auth from "../auth.js";
+import type * as authActions from "../authActions.js";
+import type * as history from "../history.js";
 import type * as http from "../http.js";
 import type * as lst from "../lst.js";
 
@@ -18,6 +22,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  account: typeof account;
+  auth: typeof auth;
+  authActions: typeof authActions;
+  history: typeof history;
   http: typeof http;
   lst: typeof lst;
 }>;

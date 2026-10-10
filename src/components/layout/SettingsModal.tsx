@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHeatData } from '../../context/HeatDataContext';
 import { X, RotateCcw, Sliders, Check } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface SettingsModalProps {
   open: boolean;
@@ -16,6 +17,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) =
     studyArea,
     setStudyArea,
   } = useHeatData();
+  const { user, logout } = useAuth();
 
   if (!open) return null;
 
@@ -48,6 +50,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) =
 
         {/* Content */}
         <div className="p-5 space-y-5 text-xs text-slate-700">
+          <div className="rounded-lg bg-blue-50 border border-blue-100 p-3">
+            <div className="font-semibold text-[#14213D]">{user?.fullName}</div>
+            <div className="text-slate-500 mt-0.5">{user?.email}</div>
+            <div className="mt-2 flex gap-2"><span className="px-2 py-1 rounded bg-white border border-blue-200 text-blue-700 font-semibold">{user?.accountType === 'demo' ? 'Demo account' : 'Account'}</span><span className="px-2 py-1 rounded bg-white border border-amber-200 text-amber-700 font-semibold">{user?.subscriptionStatus === 'premium' ? 'Premium' : 'Free plan'}</span></div>
+            <button onClick={() => void logout()} className="mt-3 text-red-700 font-semibold">Log out</button>
+          </div>
           {/* Temperature Units */}
           <div>
             <label className="font-semibold text-slate-900 block mb-1.5">

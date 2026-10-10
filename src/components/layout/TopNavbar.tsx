@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useHeatData } from '../../context/HeatDataContext';
+import { useHeatData, NavTab } from '../../context/HeatDataContext';
 import { reverseGeocode, searchPlaces } from '../../services/geocodingService';
 import { GeocodedLocation } from '../../types/heat';
 import {
@@ -44,13 +44,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const [locationError, setLocationError] = useState<string | null>(null);
   const geocodingAbortRef = useRef<AbortController | null>(null);
 
-  const tabTitles = {
+  const tabTitles: Record<NavTab, string> = {
     overview: 'Overview',
     map: 'Heat Risk Map',
     explorer: 'Data Explorer',
     analysis: 'Risk Analysis & Scoring',
     actions: 'Preventive Actions',
     about: 'About Project',
+    history: 'History',
   };
 
   // Quick search results

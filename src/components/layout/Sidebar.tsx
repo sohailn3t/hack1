@@ -10,6 +10,7 @@ import {
   Flame,
   X,
   AlertCircle,
+  History as HistoryIcon,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'map', label: 'Heat Risk Map', icon: Map },
     { id: 'analysis', label: 'Risk Analysis', icon: BarChart3 },
     { id: 'actions', label: 'Preventive Actions', icon: CheckSquare },
+    { id: 'history', label: 'History', icon: HistoryIcon },
   ];
 
   const handleNavClick = (tab: NavTab) => {

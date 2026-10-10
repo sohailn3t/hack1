@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import { useAuth } from './AuthContext';
 import {
   NeighborhoodRecord,
   RiskWeights,
@@ -25,7 +28,7 @@ import { fetchRealAirQuality } from '../services/airQualityService';
 import { fetchOsmFeatures } from '../services/osmFeatureService';
 import { fetchRealLST } from '../services/lstService';
 
-export type NavTab = 'overview' | 'map' | 'explorer' | 'analysis' | 'actions' | 'about';
+export type NavTab = 'overview' | 'map' | 'explorer' | 'analysis' | 'actions' | 'about' | 'history';
 export type MapLayerMode = 'risk' | 'surfaceTemp' | 'canopyGap' | 'vulnerability';
 
 interface HeatDataContextType {
@@ -107,6 +110,8 @@ interface HeatDataContextType {
 const HeatDataContext = createContext<HeatDataContextType | undefined>(undefined);
 
 export const HeatDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { token, user } = useAuth();
+  const upsertHistory = useMutation(api.history.upsert);
   const [activeTab, setActiveTab] = useState<NavTab>('overview');
   const [studyArea, setStudyArea] = useState<'Demo Metro Core' | 'Valley Regional Basin'>('Demo Metro Core');
   const [weights, setWeights] = useState<RiskWeights>(DEFAULT_WEIGHTS);
@@ -363,6 +368,21 @@ export const HeatDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     useSimulatedVulnerabilityForExternal,
     weights,
   ]);
+
+  useEffect(() => {
+    if (!token || !user || !selectedLocation) return;
+    void upsertHistory({
+      token,
+      locationId: selectedLocation.id,
+      displayName: selectedLocation.displayName,
+      latitude: selectedLocation.lat,
+      longitude: selectedLocation.lng,
+      radiusKm: 0.5,
+      riskScore: externalRiskScore?.score,
+      riskCategory: externalRiskScore?.category,
+      isSimulated: Boolean(externalRiskScore),
+    });
+  }, [externalRiskScore, selectedLocation, token, upsertHistory, user]);
 
   const setSelectedNeighborhood = (n: NeighborhoodRecord) => {
     setSelectedNeighborhoodId(n.id);

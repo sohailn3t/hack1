@@ -1,4 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
+import { useAuth } from '../../context/AuthContext';
 import { useHeatData } from '../../context/HeatDataContext';
 import { RiskBadge } from '../common/RiskBadge';
 import {
@@ -205,6 +208,9 @@ const LOCATION_PROTOCOLS: Record<RiskCategory, LocationPrecaution[]> = {
 };
 
 export const PreventiveActionsPage: React.FC = () => {
+  const { token } = useAuth();
+  const historyEntries = useQuery(api.history.list, token ? { token } : 'skip') ?? [];
+  const saveProgress = useMutation(api.history.saveProgress);
   const {
     reviewTasks,
     toggleTaskComplete,
@@ -238,6 +244,12 @@ export const PreventiveActionsPage: React.FC = () => {
       return {};
     }
   });
+  const currentHistoryEntry = historyEntries.find((entry) => entry.locationId === selectedLocation?.id);
+
+  useEffect(() => {
+    if (!currentHistoryEntry) return;
+    setCompletedLocationPrecautions(Object.fromEntries(currentHistoryEntry.completedTitles.map((title) => [title, true])));
+  }, [currentHistoryEntry]);
 
   // New task form state
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -303,6 +315,13 @@ export const PreventiveActionsPage: React.FC = () => {
     setCompletedLocationPrecautions((current) => {
       const next = { ...current, [title]: !current[title] };
       localStorage.setItem('heatshield-location-precautions', JSON.stringify(next));
+      if (token && currentHistoryEntry) {
+        void saveProgress({
+          token,
+          historyId: currentHistoryEntry._id,
+          completedTitles: Object.entries(next).filter(([, done]) => done).map(([name]) => name),
+        });
+      }
       return next;
     });
   };
